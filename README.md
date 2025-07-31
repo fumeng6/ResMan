@@ -1,54 +1,119 @@
-# ResMan 研究项目管理工具 - 用户手册
+# ResMan 研究项目管理工具
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/your-username/resman)
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue)](https://docs.microsoft.com/en-us/powershell/)
+[![Bash](https://img.shields.io/badge/Bash-4.0%2B-green)](https://www.gnu.org/software/bash/)
+
+**ResMan** (Research Manager) 是一个跨平台的研究项目管理工具，专为学术研究和科研工作设计。它集成了项目管理、版本控制、自动备份和研究日志等功能，帮助研究人员高效地组织和管理研究项目。
 
 ## 目录
-- [工具概述](#工具概述)
-- [快速入门](#快速入门)
-- [功能详解](#功能详解)
-- [命令参考](#命令参考)
-- [配置指南](#配置指南)
-- [Git增强功能](#git增强功能)
-- [实用示例](#实用示例)
+- [特性概览](#特性概览)
+- [支持平台](#支持平台)
+- [快速开始](#快速开始)
+- [详细文档](#详细文档)
+- [安装指南](#安装指南)
+- [使用示例](#使用示例)
+- [配置说明](#配置说明)
 - [最佳实践](#最佳实践)
 - [故障排除](#故障排除)
-- [FAQ常见问题](#faq常见问题)
+- [贡献指南](#贡献指南)
+- [许可证](#许可证)
 
 ---
 
-## 工具概述
+## 特性概览
 
-**ResMan** (Research Manager) 是一个专为研究项目设计的命令行管理工具，旨在简化研究工作流程，提高科研效率。
-
-### 核心特性
-
-🎯 **项目结构化管理**
+### 🎯 项目结构化管理
 - 标准化的研究项目目录结构
 - 项目标识和元数据管理
 - 智能项目检测和列表显示
 
-📚 **研究日志系统**
+### 📚 研究日志系统
 - 结构化的研究记录
 - 自动Git信息关联
 - 时间线追踪
 
-🔄 **Git版本控制集成**
+### 🔄 Git版本控制集成
 - 自动创建远程仓库 (GitHub/GitLab/Gitee)
 - 智能文件过滤和同步
 - SSH/HTTPS协议支持
 
-💾 **自动化备份系统**
+### 💾 自动化备份系统
 - 日备份和周备份策略
 - 增量备份优化
 - 旧备份自动清理
 
-📊 **项目状态报告**
+### 📊 项目状态报告
 - 自动生成项目概览
 - 文件统计和Git状态
 - 最近活动追踪
 
-🧹 **中间文件清理**
+### 🧹 维护工具
 - Python缓存清理
 - Jupyter检查点清理
 - 临时文件管理
+
+## 支持平台
+
+ResMan 提供三个平台特定的脚本版本：
+
+| 平台 | 脚本文件 | 依赖 | 安装方式 |
+|------|----------|------|----------|
+| **Windows** | `resman.ps1` | PowerShell 5.1+, Git | 内置/可选 Git CLI |
+| **Linux** | `resman-linux.sh` | Bash, jq, bc, rsync, git | `apt install` / `yum install` |
+| **macOS** | `resman-macos.sh` | Bash, jq, bc, rsync, git | `brew install` |
+
+## 快速开始
+
+### Windows
+```powershell
+# 设置执行策略
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 运行脚本
+.\resman.ps1 -h
+
+# 创建新项目
+.\resman.ps1 -n "my-research-project"
+```
+
+### Linux
+```bash
+# 安装依赖
+sudo apt install jq bc rsync git  # Ubuntu/Debian
+sudo yum install jq bc rsync git   # CentOS/RHEL
+
+# 设置执行权限
+chmod +x resman-linux.sh
+
+# 运行脚本
+./resman-linux.sh -h
+
+# 创建新项目
+./resman-linux.sh -n "my-research-project"
+```
+
+### macOS
+```bash
+# 安装依赖（使用 Homebrew）
+brew install jq bc rsync git
+
+# 设置执行权限
+chmod +x resman-macos.sh
+
+# 运行脚本
+./resman-macos.sh -h
+
+# 创建新项目
+./resman-macos.sh -n "my-research-project"
+```
+
+## 详细文档
+
+### 工具概述
+
+**ResMan** 专为研究项目设计，旨在简化研究工作流程，提高科研效率。
 
 ### 适用场景
 
@@ -57,53 +122,200 @@
 - **长期研究项目**：版本管理、备份策略、知识积累
 - **多项目管理**：统一工作流、标准化结构
 
----
+### 项目结构
 
-## 快速入门
+ResMan 创建标准化的项目结构：
 
-### 系统要求
+```
+my-project/
+├── data/
+│   ├── raw/           # 原始数据，不可修改
+│   ├── processed/     # 预处理后的数据
+│   └── intermediate/  # 中间结果
+├── code/              # 源代码
+├── results/
+│   ├── figures/       # 图表和可视化
+│   ├── outcome/       # 主要结果
+│   └── reports/       # 报告文档
+├── docs/              # 项目文档
+├── README.md          # 项目说明
+├── research_log.md    # 研究日志
+├── data_lineage.json  # 数据处理追踪
+├── .resman           # 项目标识文件
+└── .gitignore        # Git忽略规则
+```
 
-- **操作系统**：Windows 10/11
-- **PowerShell**：5.1 或更高版本
-- **Git**：必须安装并配置
-- **可选**：GitHub CLI (`gh`) 或 GitLab CLI (`glab`)
+## 安装指南
 
-### 安装步骤
+### 依赖要求
 
-1. **下载脚本**
-   ```powershell
-   # 将 resman.ps1 放置到合适位置
-   # 例如：C:\Tools\resman.ps1
-   ```
+所有平台都需要安装Git作为基础依赖：
 
-2. **设置执行策略**（如果需要）
-   ```powershell
-   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-   ```
+**Windows:**
+- PowerShell 5.1+ (Windows 10/11 内置)
+- Git (必需)
+- GitHub CLI (`gh`) 或 GitLab CLI (`glab`) (可选，用于自动创建远程仓库)
 
-3. **创建别名**（推荐）
-   ```powershell
-   # 添加到 PowerShell 配置文件
-   Set-Alias resman "C:\Tools\resman.ps1"
-   ```
+**Linux:**
+- Bash 4.0+
+- `jq` - JSON处理工具
+- `bc` - 数学计算工具  
+- `rsync` - 文件同步工具
+- `git` - 版本控制
+
+**macOS:**
+- Bash 4.0+
+- `jq` - JSON处理工具
+- `bc` - 数学计算工具
+- `rsync` - 文件同步工具  
+- `git` - 版本控制
+
+### 安装方法
+
+#### Windows
+```powershell
+# 1. 设置执行策略
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 2. 下载脚本到合适位置
+# 推荐创建专用目录：C:\Tools\ResMan\
+mkdir "C:\Tools\ResMan"
+# 将 resman.ps1 放入该目录
+
+# 3. 永久配置 - 方法一：添加到环境变量PATH
+# 打开系统环境变量设置，将 C:\Tools\ResMan 添加到PATH
+# 或使用PowerShell命令：
+$env:PATH += ";C:\Tools\ResMan"
+[Environment]::SetEnvironmentVariable("PATH", $env:PATH, [EnvironmentVariableTarget]::User)
+
+# 3. 永久配置 - 方法二：PowerShell配置文件别名
+# 检查配置文件是否存在
+if (!(Test-Path $PROFILE)) { New-Item -Path $PROFILE -Type File -Force }
+# 添加别名到配置文件
+Add-Content $PROFILE 'Set-Alias resman "C:\Tools\ResMan\resman.ps1"'
+
+# 4. 重启PowerShell或重新加载配置
+. $PROFILE
+
+# 5. 安装Git CLI工具（可选）
+winget install GitHub.cli
+# 或
+choco install gh
+
+# 6. 验证安装
+resman -v
+```
+
+#### Linux (Ubuntu/Debian)
+```bash
+# 1. 安装依赖
+sudo apt update
+sudo apt install jq bc rsync git
+
+# 2. 下载并安装脚本
+# 推荐放置位置：~/bin/ 或 /usr/local/bin/
+mkdir -p ~/bin
+# 将 resman-linux.sh 放入 ~/bin/ 目录
+cp resman-linux.sh ~/bin/resman-linux.sh
+chmod +x ~/bin/resman-linux.sh
+
+# 3. 永久配置 - 方法一：符号链接（推荐）
+sudo ln -s ~/bin/resman-linux.sh /usr/local/bin/resman
+
+# 3. 永久配置 - 方法二：添加到PATH和别名
+# 添加到 ~/.bashrc
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+echo 'alias resman="$HOME/bin/resman-linux.sh"' >> ~/.bashrc
+
+# 4. 重新加载shell配置
+source ~/.bashrc
+
+# 5. 安装Git CLI工具（可选）
+# GitHub CLI
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt update
+sudo apt install gh
+
+# 6. 验证安装
+resman -v
+```
+
+#### Linux (CentOS/RHEL)
+```bash
+# 1. 安装依赖
+sudo yum install epel-release
+sudo yum install jq bc rsync git
+
+# 2-6. 后续步骤与Ubuntu/Debian相同
+# 参考上面的Ubuntu/Debian安装方法
+```
+
+#### macOS
+```bash
+# 1. 安装Homebrew（如果未安装）
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 2. 安装依赖
+brew install jq bc rsync git
+
+# 3. 下载并安装脚本
+# 推荐放置位置：~/bin/ 或 /usr/local/bin/
+mkdir -p ~/bin
+# 将 resman-macos.sh 放入 ~/bin/ 目录
+cp resman-macos.sh ~/bin/resman-macos.sh
+chmod +x ~/bin/resman-macos.sh
+
+# 4. 永久配置 - 方法一：符号链接（推荐）
+sudo ln -s ~/bin/resman-macos.sh /usr/local/bin/resman
+
+# 4. 永久配置 - 方法二：添加到PATH和别名
+# 对于bash用户，添加到 ~/.bash_profile
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bash_profile
+echo 'alias resman="$HOME/bin/resman-macos.sh"' >> ~/.bash_profile
+
+# 对于zsh用户（macOS默认），添加到 ~/.zshrc
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.zshrc
+echo 'alias resman="$HOME/bin/resman-macos.sh"' >> ~/.zshrc
+
+# 5. 重新加载shell配置
+source ~/.bash_profile  # 对于bash用户
+source ~/.zshrc         # 对于zsh用户
+
+# 6. 安装Git CLI工具（可选）
+brew install gh    # GitHub CLI
+# 或
+brew install glab  # GitLab CLI
+
+# 7. 验证安装
+resman -v
+```
 
 ### 首次运行
 
-```powershell
-# 初始化配置
+所有平台的首次运行都是相似的：
+
+```bash
+# 检查版本和初始化配置
 resman -v
 
-# 首次运行会自动引导配置
-# 设置研究根目录和备份目录
+# 首次运行会自动引导配置：
+# - 研究项目根目录
+# - 备份目录
+# - Git相关设置
 ```
 
 ### 创建第一个项目
 
-```powershell
+```bash
 # 创建新的研究项目
 resman -n "my-first-research"
 
-# 项目将自动创建标准目录结构和Git仓库
+# 项目将自动创建：
+# - 标准目录结构
+# - Git仓库初始化
+# - 远程仓库创建（如果配置）
+# - 项目标识文件
 ```
 
 ---
@@ -292,10 +504,7 @@ resman -b "specific-project" # 备份指定项目
 |------|--------|------|-----------|
 | `-s` | `--sync` | 同步到Git（基础） | ✅ |
 | `-sa` | `--sync-all` | 同步到Git（包含结果） | ✅ |
-| `-gr` | `--git-repo` | 创建远程仓库 | ✅ |
-| `-gc` | `--git-config` | 配置远程仓库 | ✅ |
 | `-gs` | `--git-status` | 检查Git工具状态 | ❌ |
-| `-gt` | `--git-test` | 测试Git配置 | ✅ |
 
 ### 其他功能
 
@@ -305,37 +514,88 @@ resman -b "specific-project" # 备份指定项目
 | `-b` | `--backup` | 备份项目 | ❌ (可选) |
 | `-a` | `--auto` | 自动化工作流 | ✅ |
 
-### 使用示例
+## 使用示例
 
-```powershell
-# 基础操作
+### 基础操作
+```bash
+# 所有平台使用方式相同
 resman -h                           # 查看帮助
 resman -l                           # 列出所有项目
 resman -n "earthquake-analysis"     # 创建新项目
-
-# 日常工作
-resman -j "earthquake-analysis"     # 添加研究日志
-resman -s "earthquake-analysis"     # 同步代码
-resman -b "earthquake-analysis"     # 备份项目
-
-# Git增强功能
-resman -gs                          # 检查Git工具
-resman -gr "earthquake-analysis"    # 创建远程仓库
-resman -gt "earthquake-analysis"    # 测试Git连接
-
-# 自动化
-resman -a "earthquake-analysis"     # 完整工作流
 ```
 
----
+### 日常工作流
+```bash
+# 记录研究进展
+resman -j "earthquake-analysis"     # 添加研究日志
 
-## 配置指南
+# 同步代码到Git
+resman -s "earthquake-analysis"     # 基础同步（代码+文档）
+resman -sa "earthquake-analysis"    # 完全同步（包含结果文件）
+
+# 备份项目
+resman -b "earthquake-analysis"     # 备份指定项目
+resman -b                           # 备份所有项目
+```
+
+### Git增强功能
+```bash
+# 检查Git环境
+resman -gs                          # 检查Git CLI工具状态
+```
+
+### 自动化工作流
+```bash
+# 一键完成：日志记录 → Git同步 → 项目备份
+resman -a "earthquake-analysis"     
+```
+
+### 项目维护
+```bash
+# 生成项目报告
+resman -r "earthquake-analysis"     # 项目状态报告
+
+# 清理中间文件
+resman -c "earthquake-analysis"     # 清理临时文件和缓存
+
+# 标记现有文件夹为项目（支持交互式Git初始化）
+resman -i "existing-folder"         # 转换现有文件夹
+```
+
+## 配置说明
 
 ### 配置文件位置
 
-ResMan 的配置文件存储在：
+ResMan 在所有平台使用相同的配置文件格式：
+
+**Windows:** `%USERPROFILE%\.research_config.json`  
+**Linux/macOS:** `~/.research_config.json`
+
+### 跨平台配置迁移
+
+配置文件格式完全相同，可以直接在平台间复制：
+
+```bash
+# 从Windows复制到Linux/macOS
+cp /mnt/c/Users/username/.research_config.json ~/.research_config.json
+
+# 或者手动复制配置内容
 ```
-%USERPROFILE%\.research_config.json
+
+### 平台差异适配
+
+虽然配置文件相同，但路径需要根据平台调整：
+
+```json
+{
+    // Windows路径
+    "RESEARCH_ROOT": "C:\\Users\\username\\research",
+    "BACKUP_ROOT": "C:\\Users\\username\\research\\_backup",
+    
+    // Linux/macOS路径  
+    "RESEARCH_ROOT": "/home/username/research",
+    "BACKUP_ROOT": "/home/username/research/_backup"
+}
 ```
 
 ### 配置项说明
@@ -516,29 +776,6 @@ gitee:  https://gitee.com/username/project-name.git
   SSH优先: True
 ```
 
-#### 创建远程仓库 (`resman -gr project-name`)
-
-为现有项目创建远程仓库：
-1. 检查项目是否存在本地Git仓库
-2. 使用配置的平台和CLI工具创建远程仓库
-3. 交互式确认仓库设置
-
-#### 配置远程仓库 (`resman -gc project-name`)
-
-配置项目的远程仓库连接：
-1. 根据配置生成远程URL
-2. 添加或更新origin远程
-3. 如果未配置用户名，会提示输入
-
-#### 测试Git配置 (`resman -gt project-name`)
-
-测试项目的Git配置和连接：
-```
-[INFO] 测试项目Git配置: my-project
-[INFO] 远程仓库: git@github.com:username/my-project.git
-[INFO] 测试远程连接...
-[INFO] ✓ 远程连接正常
-```
 
 ### 自动化集成
 
@@ -728,14 +965,8 @@ git init
 git add .
 git commit -m "项目初始化：迁移现有文件"
 
-# 创建远程仓库
-resman -gr "fluid_injection_study"
-
-# 配置远程连接
-resman -gc "fluid_injection_study"
-
-# 测试连接
-resman -gt "fluid_injection_study"
+# 检查Git状态
+resman -gs
 ```
 
 #### 4. 建立工作流程
@@ -1026,28 +1257,56 @@ resman -c "project-name"
 resman -l | ForEach-Object { resman -c $_.Name }
 ```
 
----
-
 ## 故障排除
 
 ### 常见问题和解决方案
 
-#### 1. Git相关问题
+#### 依赖问题
 
-**问题：Git初始化失败**
+**Linux/macOS: 缺少依赖工具**
+```bash
+# Ubuntu/Debian
+sudo apt install jq bc rsync git
+
+# CentOS/RHEL  
+sudo yum install jq bc rsync git
+
+# macOS
+brew install jq bc rsync git
 ```
-[ERROR] Git初始化失败，但项目已创建
-```
-*解决方案：*
+
+**Windows: PowerShell执行策略限制**
 ```powershell
-# 检查Git是否正确安装
+# 设置执行策略
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 或解除单个脚本阻止
+Unblock-File "path\to\resman.ps1"
+```
+
+#### Git相关问题
+
+**Git初始化失败**
+```bash
+# 检查Git安装
 git --version
 
 # 手动初始化Git
-cd "C:\research\project-name"
+cd "research/project-name"
 git init
 git add .
 git commit -m "项目初始化"
+```
+
+**远程仓库创建失败**
+```bash
+# 检查CLI工具认证
+gh auth status    # GitHub
+glab auth status  # GitLab
+
+# 重新登录
+gh auth login     # GitHub
+glab auth login   # GitLab
 ```
 
 **问题：远程仓库创建失败**
@@ -1239,18 +1498,116 @@ resman -s "project-name"  # 而不是 -sa
 # 编辑脚本中的robocopy命令添加 /XD 参数
 ```
 
+### 权限和路径问题
+
+**无法创建目录**
+```bash
+# 检查目录权限
+ls -la /path/parent/directory  # Linux/macOS
+icacls "C:\path\parent"        # Windows
+
+# 选择有写权限的目录，或使用sudo/管理员权限
+```
+
+**配置文件损坏**
+```bash
+# 删除配置文件重新初始化
+rm ~/.research_config.json     # Linux/macOS
+del "%USERPROFILE%\.research_config.json"  # Windows
+
+# 重新运行初始化
+resman -v
+```
+
+### 调试技巧
+
+**启用详细输出**
+- 查看脚本内的日志函数调用
+- 检查Git命令输出
+- 验证文件权限和路径
+
+**手动验证**
+```bash
+# 验证项目结构
+tree project-name              # Linux/macOS
+tree /F project-name           # Windows
+
+# 验证Git状态
+cd project-name
+git status
+git remote -v
+```
+
+---
+
+## 贡献指南
+
+### 开发环境
+
+ResMan 采用模块化设计，易于扩展和维护：
+
+- **Windows版本**: PowerShell 脚本 (`resman.ps1`)
+- **Linux版本**: Bash 脚本 (`resman-linux.sh`) 
+- **macOS版本**: Bash 脚本 (`resman-macos.sh`)
+
+### 代码结构
+
+所有版本都遵循相同的架构：
+- 配置管理模块
+- 项目管理功能
+- Git集成功能
+- 备份系统
+- 日志记录系统
+
+### 贡献方式
+
+1. **Fork 本仓库**
+2. **创建功能分支** (`git checkout -b feature/amazing-feature`)
+3. **提交更改** (`git commit -m 'Add amazing feature'`)
+4. **推送分支** (`git push origin feature/amazing-feature`)
+5. **创建 Pull Request**
+
+### 开发规范
+
+- 保持跨平台功能一致性
+- 遵循现有的代码风格
+- 添加适当的错误处理
+- 更新相关文档
+
+### Bug 报告
+
+使用 GitHub Issues 报告问题时，请包含：
+- 操作系统和版本
+- 脚本版本
+- 错误信息和日志
+- 复现步骤
+
+---
+
+## 许可证
+
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+### 致谢
+
+感谢所有贡献者和用户的支持！
+
 ---
 
 ## FAQ常见问题
 
 ### Q1: ResMan支持哪些操作系统？
-**A:** 目前ResMan专为Windows PowerShell设计，支持Windows 10/11。未来可能会提供Linux/macOS版本。
+**A:** ResMan 现已支持 Windows、Linux 和 macOS 三个平台，提供功能完全一致的跨平台体验。
 
 ### Q2: 可以在没有Git的情况下使用ResMan吗？
 **A:** 可以，但会失去版本控制功能。ResMan的项目管理、备份、日志功能仍然可用。
 
 ### Q3: 如何更改研究根目录？
-**A:** 删除配置文件 `%USERPROFILE%\.research_config.json`，重新运行 `resman -v` 会引导重新配置。
+**A:** 删除配置文件重新初始化：
+- **Windows**: `del "%USERPROFILE%\.research_config.json"`
+- **Linux/macOS**: `rm ~/.research_config.json`
+
+然后重新运行 `resman -v` 会引导重新配置。
 
 ### Q4: 备份占用存储空间太大怎么办？
 **A:** 
@@ -1308,129 +1665,61 @@ resman -l | ForEach-Object { resman -r $_.Name }
 - 可以稍后手动执行 `git push`
 - 使用 `resman -gt project-name` 测试连接
 
+### Q16: 三个平台的脚本功能完全一致吗？
+**A:** 是的，所有平台版本提供完全相同的功能和用户体验，只是底层实现适配了不同的系统环境。
+
+### Q17: 可以在同一台机器上安装多个版本吗？
+**A:** 可以，但建议只使用适合您系统的版本。配置文件在所有版本间共享。
+
 ---
 
-## 附录
+## 快速参考
 
-### A. 配置文件完整示例
+### 命令速查
 
-```json
-{
-  "RESEARCH_ROOT": "C:\\Users\\YourName\\research",
-  "BACKUP_ROOT": "C:\\Users\\YourName\\research\\_backup",
-  "BACKUP_KEEP_DAYS": 30,
-  "MAX_FILE_SIZE_MB": 100,
-  "GIT_AUTO_PUSH": true,
-  "DEFAULT_REMOTE": "origin",
-  "LOG_LEVEL": "INFO",
-  "ENABLE_COLOR": true,
-  "CREATED_DATE": "2025-01-31 14:30:25",
-  "GIT_PLATFORM": "github",
-  "GIT_USERNAME": "your-github-username",
-  "GIT_DEFAULT_VISIBILITY": "private",
-  "GIT_AUTO_CREATE_REMOTE": true,
-  "GIT_CLI_TOOL": "",
-  "GIT_SSH_PREFERRED": true
-}
-```
+```bash
+# 基础操作
+resman -h                    # 帮助信息
+resman -v                    # 版本信息  
+resman -l                    # 列出项目
 
-### B. .gitignore 模板
+# 项目管理
+resman -n "project"          # 创建新项目
+resman -i "folder"           # 标记现有文件夹
+resman -r "project"          # 生成项目报告
+resman -c "project"          # 清理临时文件
 
-ResMan自动生成的.gitignore文件：
-```gitignore
-# 原始数据文件
-data/raw/
+# 日常工作流
+resman -j "project"          # 添加研究日志
+resman -s "project"          # Git同步（基础）
+resman -sa "project"         # Git同步（完整）
+resman -b "project"          # 备份项目
+resman -a "project"          # 自动化流程
 
-# 大型中间文件
-data/intermediate/*.h5
-data/intermediate/*.hdf5
-data/intermediate/*.nc
-data/intermediate/*.mat
-
-# 大型结果文件 (>100MB)
-results/outcome/*.h5
-results/outcome/*.hdf5
-results/outcome/*.bin
-results/outcome/*.dat
-
-# 临时文件
-*.tmp
-*.temp
-*~
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-
-# Jupyter Notebook
-.ipynb_checkpoints/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# 系统文件
-.DS_Store
-Thumbs.db
-desktop.ini
-```
-
-### C. 项目标识文件示例
-
-`.resman` 文件内容：
-```json
-{
-  "project_name": "earthquake-analysis",
-  "created_date": "2025-01-31T14:30:25",
-  "created_by": "YourName",
-  "resman_version": "1.0.0",
-  "project_type": "research",
-  "description": "研究项目标识文件 - 请勿删除"
-}
-```
-
-### D. 命令快速参考卡
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                ResMan 命令快速参考                        │
-├─────────────────────────────────────────────────────────┤
-│ 项目管理                                                  │
-│   resman -n "project"     创建新项目                     │
-│   resman -i "folder"      标记现有文件夹                  │
-│   resman -l               列出所有项目                    │
-│                                                          │
-│ 日常工作                                                  │
-│   resman -j "project"     添加研究日志                    │
-│   resman -s "project"     同步到Git                      │
-│   resman -b "project"     备份项目                       │
-│   resman -a "project"     自动化工作流                    │
-│                                                          │
-│ Git增强                                                   │
-│   resman -gr "project"    创建远程仓库                    │
-│   resman -gc "project"    配置远程仓库                    │
-│   resman -gs              检查Git状态                     │
-│   resman -gt "project"    测试Git配置                     │
-│                                                          │
-│ 维护工具                                                  │
-│   resman -r "project"     生成项目报告                    │
-│   resman -c "project"     清理中间文件                    │
-│   resman -h               显示帮助                       │
-└─────────────────────────────────────────────────────────┘
+# Git增强功能
+resman -gs                   # 检查Git状态
 ```
 
 ---
 
-**ResMan v1.0.0 用户手册**  
-*更新日期：2025-01-31*  
-*文档版本：1.0*
+## 项目信息
 
-如有问题或建议，请通过GitHub Issues或邮件联系作者。
+- **版本**: 1.0.0
+- **作者**: Maoye  
+- **许可证**: MIT
+- **支持平台**: Windows, Linux, macOS
+- **更新日期**: 2025-07-31
+
+### 相关链接
+
+- [GitHub 仓库](https://github.com/your-username/resman)
+- [问题反馈](https://github.com/your-username/resman/issues)
+- [贡献指南](https://github.com/your-username/resman/blob/main/CONTRIBUTING.md)
+
+---
+
+**感谢使用 ResMan！**
+
+如果这个工具对您的研究工作有帮助，欢迎给项目加星⭐或分享给其他研究人员。
+
+有任何问题或建议，请通过 GitHub Issues 联系我们。

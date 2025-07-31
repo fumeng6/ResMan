@@ -181,10 +181,16 @@ function Write-LogDebug {
 # 显示版本信息
 function Show-Version {
     Write-Host @"
+   ____           __  __            
+  |  _ \ ___  ___|  \/  | __ _ _ __  
+  | |_) / _ \/ __| |\/| |/ _`` | '_ \ 
+  |  _ <  __/\__ \ |  | | (_| | | | |
+  |_| \_\___||___/_|  |_|\__,_|_| |_|
+
 研究管理集成脚本 (Windows PowerShell版)
 版本: $SCRIPT_VERSION
 作者: Maoye
-日期: 2025-07-22
+日期: 2025-07-31
 
 功能特性:
 - 项目结构化管理
@@ -219,23 +225,15 @@ function Show-Help {
   -a, --auto              自动化流程（日志+同步+备份）
   
 Git 增强功能:
-  -gr, --git-repo         为现有项目创建远程仓库
-  -gc, --git-config       配置项目远程仓库
   -gs, --git-status       检查Git CLI工具状态
-  -gt, --git-test         测试Git配置和连接
   
 示例:
   resman -n "injection-seismicity-2025"       # 创建新项目（自动创建远程仓库）
-  resman -i "existing-folder"                 # 标记现有文件夹为项目
+  resman -i "existing-folder"                 # 标记现有文件夹为项目（可选Git初始化）
   resman -j "injection-seismicity-2025"       # 添加日志条目
   resman -a "injection-seismicity-2025"       # 执行完整工作流
   resman -b                                    # 备份所有项目
-  
-Git 增强示例:
-  resman -gr "my-project"                     # 为现有项目创建远程仓库
-  resman -gc "my-project"                     # 配置项目的远程仓库
   resman -gs                                  # 检查Git CLI工具状态
-  resman -gt "my-project"                     # 测试Git配置
 
 "@ -ForegroundColor $Colors.White
 }
@@ -520,6 +518,45 @@ function Initialize-ExistingProject {
 "@
         $LogContent | Out-File $LogFile -Encoding UTF8
         Write-LogInfo "已创建研究日志文件"
+    }
+    
+    # 交互式Git初始化
+    Set-Location $FolderPath
+    if (-not (Test-Path ".git")) {
+        Write-Host ""
+        $InitGit = Read-Host "是否要初始化Git仓库? (y/N)"
+        if ($InitGit -eq "y" -or $InitGit -eq "Y") {
+            try {
+                git init 2>$null
+                git add . 2>$null
+                git commit -m "项目初始化: 从现有文件夹转换" 2>$null
+                Write-LogInfo "Git仓库已初始化"
+                
+                # 询问是否创建远程仓库
+                $CreateRemote = Read-Host "是否要创建远程仓库? (y/N)"
+                if ($CreateRemote -eq "y" -or $CreateRemote -eq "Y") {
+                    $RemoteCreated = New-RemoteRepository -ProjectName $FolderName -Interactive $true
+                    if ($RemoteCreated) {
+                        $RemoteConfigured = Set-RemoteRepository -ProjectName $FolderName -Interactive $true
+                        if ($RemoteConfigured) {
+                            git push -u origin main 2>$null
+                            if ($LASTEXITCODE -eq 0) {
+                                Write-LogInfo "项目已推送到远程仓库"
+                            } else {
+                                git push -u origin master 2>$null
+                                if ($LASTEXITCODE -eq 0) {
+                                    Write-LogInfo "项目已推送到远程仓库"
+                                } else {
+                                    Write-LogWarn "推送到远程仓库失败"
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch {
+                Write-LogWarn "Git初始化失败: $_"
+            }
+        }
     }
     
     Write-LogInfo "文件夹 '$FolderName' 已成功标记为项目"
@@ -1242,7 +1279,7 @@ function Main {
             exit 0
         }
         { $_ -in @("-v", "--version") } {
-            Write-Host "研究管理集成脚本 (Windows版) v$SCRIPT_VERSION" -ForegroundColor $Colors.Green
+            Show-Version
             exit 0
         }
         { $_ -in @("-l", "--list") } {
@@ -1307,20 +1344,6 @@ function Main {
             }
             Start-AutoWorkflow $ProjectName
         }
-        { $_ -in @("-gr", "--git-repo") } {
-            if ([string]::IsNullOrEmpty($ProjectName)) {
-                Write-LogError "请指定项目名称"
-                exit 1
-            }
-            New-RemoteRepository -ProjectName $ProjectName -Interactive $true
-        }
-        { $_ -in @("-gc", "--git-config") } {
-            if ([string]::IsNullOrEmpty($ProjectName)) {
-                Write-LogError "请指定项目名称"
-                exit 1
-            }
-            Set-RemoteRepository -ProjectName $ProjectName -Interactive $true
-        }
         { $_ -in @("-gs", "--git-status") } {
             $GitTools = Test-GitCLI
             Write-Host ""
@@ -1341,43 +1364,6 @@ function Main {
             Write-Host "  默认可见性: $($config.GIT_DEFAULT_VISIBILITY)" -ForegroundColor $Colors.Blue
             Write-Host "  自动创建远程: $($config.GIT_AUTO_CREATE_REMOTE)" -ForegroundColor $Colors.Blue
             Write-Host "  SSH优先: $($config.GIT_SSH_PREFERRED)" -ForegroundColor $Colors.Blue
-        }
-        { $_ -in @("-gt", "--git-test") } {
-            if ([string]::IsNullOrEmpty($ProjectName)) {
-                Write-LogError "请指定项目名称"
-                exit 1
-            }
-            
-            Write-LogInfo "测试项目Git配置: $ProjectName"
-            $ProjectDir = Test-Project $ProjectName
-            Set-Location $ProjectDir
-            
-            # 测试Git仓库状态
-            if (-not (Test-Path ".git")) {
-                Write-LogError "项目未初始化Git仓库"
-                exit 1
-            }
-            
-            # 检查远程仓库
-            try {
-                $RemoteUrl = git remote get-url origin 2>$null
-                if ($LASTEXITCODE -eq 0) {
-                    Write-LogInfo "远程仓库: $RemoteUrl"
-                    
-                    # 测试连接
-                    Write-LogInfo "测试远程连接..."
-                    git ls-remote origin HEAD 2>$null | Out-Null
-                    if ($LASTEXITCODE -eq 0) {
-                        Write-LogInfo "✓ 远程连接正常"
-                    } else {
-                        Write-LogWarn "✗ 无法连接到远程仓库"
-                    }
-                } else {
-                    Write-LogWarn "未配置远程仓库"
-                }
-            } catch {
-                Write-LogError "Git测试失败: $_"
-            }
         }
         "" {
             # 无参数时显示简短提示
