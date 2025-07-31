@@ -1,7 +1,7 @@
 # ResMan 研究项目管理工具
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/your-username/resman)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/fumeng6/resman)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue)](https://docs.microsoft.com/en-us/powershell/)
 [![Bash](https://img.shields.io/badge/Bash-4.0%2B-green)](https://www.gnu.org/software/bash/)
 
@@ -1712,9 +1712,9 @@ resman -gs                   # 检查Git状态
 
 ### 相关链接
 
-- [GitHub 仓库](https://github.com/your-username/resman)
-- [问题反馈](https://github.com/your-username/resman/issues)
-- [贡献指南](https://github.com/your-username/resman/blob/main/CONTRIBUTING.md)
+- [GitHub 仓库](https://github.com/fumeng6/resman)
+- [问题反馈](https://github.com/fumeng6/resman/issues)
+- [贡献指南](https://github.com/fumeng6/resman/blob/main/CONTRIBUTING.md)
 
 ---
 
