@@ -67,8 +67,8 @@
    - 权限不足的情况
 
 3. **Git集成**：
-   - 有/无 Git CLI 工具的情况
-   - 不同的Git平台（GitHub/GitLab）
+   - 有/无 Git 配置的情况
+- 不同的操作系统环境
    - SSH和HTTPS协议
 
 ## 开发环境设置
@@ -77,8 +77,9 @@
 ```powershell
 # 安装 PowerShell 5.1+
 # 安装 Git
-# 可选：安装 GitHub CLI
-winget install GitHub.cli
+# 确保Git已安装并配置
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
 ```
 
 ### Linux
@@ -93,7 +94,8 @@ sudo yum install git jq bc rsync
 ### macOS
 ```bash
 # 安装 Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# 确保Git已安装
+sudo apt-get update && sudo apt-get install git
 
 # 安装依赖
 brew install git jq bc rsync shellcheck
